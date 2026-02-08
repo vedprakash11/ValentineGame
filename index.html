@@ -26,9 +26,41 @@
         transform: translateY(-10px);
       }
     }
+
+    .popup-msg {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 14px 24px;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #fff;
+      background: linear-gradient(135deg, #bd1e59 0%, #e91e63 100%);
+      box-shadow: 0 8px 24px rgba(189, 30, 89, 0.4);
+      z-index: 1000;
+      animation: popIn 0.35s ease-out, popOut 0.3s ease-in 2.2s forwards;
+      pointer-events: none;
+      max-width: 90%;
+      text-align: center;
+    }
+    .popup-msg.yes-popup {
+      padding: 20px 36px;
+      font-size: 1.5rem;
+      animation: popIn 0.4s ease-out;
+      pointer-events: auto;
+    }
+    @keyframes popIn {
+      from { top: -60px; opacity: 0; }
+      to { top: 24px; opacity: 1; }
+    }
+    @keyframes popOut {
+      to { top: -60px; opacity: 0; }
+    }
   </style>
 </head>
 <body class="gradient-background">
+  <div id="popupContainer"></div>
   <div class="flex items-center justify-center h-screen">
     <div class="flex flex-col items-center p-4">
       <img id="imageDisplay" src="./images/image1.gif" alt="Cute kitten with flowers" class="rounded-md h-[300px]" style="object-fit: cover;" />
@@ -68,16 +100,51 @@
       "./images/image7.gif"
     ];
 
+    const noPopupMessages = [
+      "Please 😢",
+      "No you don't have an option!",
+      "Do you hate me? 😭",
+      "Say yes, pookie!",
+      "Pretty please? 🙏",
+      "I'm gonna cry...",
+      "You're breaking my heart!",
+      "Are you sure??",
+      "Think again! 💕",
+      "The Yes button is right there 👉",
+      "No means... try Yes!",
+      "I made this for you! Say yes!",
+      "One more chance? 🥺",
+      "Please please please!",
+      "Yes is the only answer here 😤"
+    ];
+
+    const popupContainer = document.getElementById('popupContainer');
+
+    function showPopup(text, isYesPopup = false) {
+      const popup = document.createElement('div');
+      popup.className = 'popup-msg' + (isYesPopup ? ' yes-popup' : '');
+      popup.textContent = text;
+      popupContainer.appendChild(popup);
+      if (isYesPopup) {
+        popup.addEventListener('click', () => popup.remove());
+        setTimeout(() => popup.remove(), 8000);
+      } else {
+        setTimeout(() => popup.remove(), 2500);
+      }
+    }
+
     noButton.addEventListener('click', function() {
+      const randomMsg = noPopupMessages[Math.floor(Math.random() * noPopupMessages.length)];
+      showPopup(randomMsg);
       if (noClickCount < 5) {
         noClickCount++;
         imageDisplay.src = imagePaths[noClickCount];
-        buttonHeight += 35; // Increase height by 5px on each click
+        buttonHeight += 35;
         buttonWidth += 35;
-        fontSize += 25; // Increase font size by 1px on each click
-        yesButton.style.height = `${buttonHeight}px`; // Update button height
+        fontSize += 25;
+        yesButton.style.height = `${buttonHeight}px`;
         yesButton.style.width = `${buttonWidth}px`;
-        yesButton.style.fontSize = `${fontSize}px`; // Update font size
+        yesButton.style.fontSize = `${fontSize}px`;
         if (noClickCount < 6) {
           noButton.textContent = ["No", "Are you sure?", "Pookie please", "Don't do this to me :(", "You're breaking my heart", "I'm gonna cry..."][noClickCount];
         }
@@ -85,10 +152,11 @@
     });
 
     yesButton.addEventListener('click', () => {
-      imageDisplay.src = './images/image7.gif'; // Change to image7.gif
-      valentineQuestion.textContent = "Yayyy!! :3"; // Change the question text
-      responseButtons.style.display = 'none'; // Hide both buttons
-      confetti(); // Trigger confetti animation
+      imageDisplay.src = './images/image7.gif';
+      valentineQuestion.textContent = "Yayyy!! :3";
+      responseButtons.style.display = 'none';
+      confetti();
+      showPopup("Yayyyy I love you 💕", true);
     });
   </script>
 </body>
